@@ -185,7 +185,6 @@ def plot_expga_results(csv_path="expga_results.csv"):
     )
     
     # Add reference lines for Nash Equilibrium and Monopoly Price
-    # Note: These values should be adjusted to match your specific model's equilibria
     plt.axhline(y=0.4, color='r', linestyle='--', label='Competitive Nash ($P^D$)')
     plt.axhline(y=0.8, color='g', linestyle='--', label='Monopoly Price ($P^M$)')
     
