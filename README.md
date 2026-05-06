@@ -23,7 +23,7 @@ An investigation into the evolutionary stability of pricing heuristics in duopol
 ## Running the Simulation
 The main script executes 50 independent trials for each noise regime ($\mu \in \{0.05, 0.25, 0.5\}$). Each trial runs for 100,000 periods.
 ```bash
-    python ExpGA_duo.py
+python ExpGA_duo.py
 ```
 
 The simulation takes ~25 minutes to run.
@@ -34,9 +34,9 @@ Upon completion, the script generates:
 `price_convergence_violin.png`: A violin plot visualizing the price distribution across SNR levels.
 
 ## Regenerating Plots
-Use the `--plot_only` flag followed by the path to the data.
+Use the `--plot-only` flag followed by the path to the data.
 ```bash
-    python ExpGA_duo.py --plot-only expga_results.csv
+python ExpGA_duo.py --plot-only expga_results.csv
 ```
 
 ## Methodology
