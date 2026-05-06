@@ -25,6 +25,7 @@ The main script executes 50 independent trials for each noise regime ($\mu \in \
     ```bash
     python ExpGA_duo.py
     ```
+The simulation takes ~25 minutes to run.
 
 Upon completion, the script generates:
 
