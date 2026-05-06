@@ -22,9 +22,9 @@ An investigation into the evolutionary stability of pricing heuristics in duopol
 
 ## Running the Simulation
 The main script executes 50 independent trials for each noise regime ($\mu \in \{0.05, 0.25, 0.5\}$). Each trial runs for 100,000 periods.
-    ```bash
+```bash
     python ExpGA_duo.py
-    ```
+```
 
 The simulation takes ~25 minutes to run.
 
@@ -35,9 +35,9 @@ Upon completion, the script generates:
 
 ## Regenerating Plots
 Use the `--plot_only` flag followed by the path to the data.
-    ```bash
+```bash
     python ExpGA_duo.py --plot-only expga_results.csv
-    ```
+```
 
 ## Methodology
 
