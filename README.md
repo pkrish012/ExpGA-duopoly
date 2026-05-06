@@ -33,6 +33,12 @@ Upon completion, the script generates:
 `expga_results.csv`: Raw data containing average price, correlation, and regret for every run.
 `price_convergence_violin.png`: A violin plot visualizing the price distribution across SNR levels.
 
+## Regenerating Plots
+Use the `--plot_only` flag followed by the path to the data.
+    ```bash
+    python ExpGA_duo.py --plot-only expga_results.csv
+    ```
+
 ## Methodology
 
 The ExpGA agent utilizes several key mechanisms to navigate the duopoly market:

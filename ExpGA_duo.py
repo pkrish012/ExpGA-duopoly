@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import argparse, os
+
 class ExpGA_Agent:
     def __init__(self, price_grid, n_pop=20, gamma=0.1, mutation_rate=0.05, crossover_rate=0.8):
         self.price_grid = price_grid
@@ -197,8 +199,22 @@ def plot_expga_results(csv_path="expga_results.csv"):
     plt.savefig("price_convergence_violin.png", dpi=300)
     plt.show()
 
-# Execute and save
-df = run_simulation()
-df.to_csv("expga_results.csv", index=False)
-print("Simulation Complete. Data saved to expga_results.csv")
-plot_expga_results()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="ExpGA Duopoly Simulation and Plotting")
+    parser.add_argument("--plot-only", type=str, help="Path to existing csv to plot without running simulation")
+    args = parser.parse_args()
+
+    if args.plot_only:
+        if os.path.exists(args.plot_only):
+            print(f"Plotting results from {args.plot_only}...")
+            plot_expga_results(args.plot_only)
+        else:
+            print(f"Error: File {args.plot_only} not found.")
+    else:
+        # Default behavior: Run simulation and then plot
+        print("Starting full simulation...")
+        df_results = run_simulation()
+        df_results.to_csv("expga_results.csv", index=False)
+        print("Simulation Complete. Data saved to expga_results.csv")
+        plot_expga_results("expga_results.csv")
