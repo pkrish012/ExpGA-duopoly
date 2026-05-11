@@ -65,46 +65,47 @@ class ExpGA_Agent:
         
         self.population = np.array(new_pop)
 
-def best_response_profit(opponent_price, price_grid, mu, a=4.1):
+def deterministic_profit(p_i, p_j, alpha=4.1, beta=-4.74):
+    """Noiseless logit profit used for BR and regret accounting."""
+    exp_i = np.exp(alpha + beta * p_i)
+    exp_j = np.exp(alpha + beta * p_j)
+    denom = 1 + exp_i + exp_j
+    return (p_i * exp_i) / denom
+
+
+def best_response_profit(opponent_price, price_grid, alpha=4.1, beta=-4.74):
     profits = []
     for p in price_grid:
-        exp_i = np.exp((a - p) / mu)
-        exp_j = np.exp((a - opponent_price) / mu)
-        denom = 1 + exp_i + exp_j
-        q_i = exp_i / denom
-        
-        profits.append(p * q_i)  # NO noise here
-    
-    return max(profits)
-    
-def expected_profit(p_i, p_j, mu, a=4.1):
-    exp_i = np.exp((a - p_i) / mu)
-    exp_j = np.exp((a - p_j) / mu)
-    denom = 1 + exp_i + exp_j
-    q_i = exp_i / denom
-    return p_i * q_i
+        profits.append(deterministic_profit(p, opponent_price, alpha=alpha, beta=beta))
 
-def market_demand(p1, p2, mu, a=4.1):
-    # Logit Demand Equation
-    exp1 = np.exp((a - p1) / mu)
-    exp2 = np.exp((a - p2) / mu)
-    denom = 1 + exp1 + exp2
-    
-    q1 = exp1 / denom
-    q2 = exp2 / denom
-    
-    # Add zero-mean shock epsilon
-    profit1 = p1 * q1 + np.random.normal(0, 0.01) 
-    profit2 = p2 * q2 + np.random.normal(0, 0.01)
-    
+    return max(profits)
+
+def expected_profit(p_i, p_j, alpha=4.1, beta=-4.74):
+    return deterministic_profit(p_i, p_j, alpha=alpha, beta=beta)
+
+def market_demand(p1, p2, mu, alpha=4.1, beta=-4.74):
+    """
+    Realized profit for learning updates.
+    mu is the standard deviation of idiosyncratic profit shocks.
+    """
+    base_profit1 = deterministic_profit(p1, p2, alpha=alpha, beta=beta)
+    base_profit2 = deterministic_profit(p2, p1, alpha=alpha, beta=beta)
+
+    profit1 = base_profit1 + np.random.normal(0.0, mu)
+    profit2 = base_profit2 + np.random.normal(0.0, mu)
+
     return profit1, profit2
 
-def run_simulation():
+
+def run_simulation(seed=11242011):
+    np.random.seed(seed)
     noise_levels = [0.05, 0.25, 0.5]
     n_runs = 50
     total_periods = 100000
     epoch_len = 100
     price_grid = np.linspace(0.1, 1.0, 10)
+    alpha = 4.1
+    beta = -4.74
     
     all_results = []
     
@@ -119,13 +120,13 @@ def run_simulation():
             regrets1, regrets2 = [], []
             for t in range(total_periods):
                 p1, p2 = agent1.get_price(), agent2.get_price()
-                prof1, prof2 = market_demand(p1, p2, mu)
+                prof1, prof2 = market_demand(p1, p2, mu, alpha=alpha, beta=beta)
 
-                br1 = best_response_profit(p2, price_grid, mu)
-                br2 = best_response_profit(p1, price_grid, mu)
+                br1 = best_response_profit(p2, price_grid, alpha=alpha, beta=beta)
+                br2 = best_response_profit(p1, price_grid, alpha=alpha, beta=beta)
 
-                regret1 = br1 - expected_profit(p1, p2, mu)
-                regret2 = br2 - expected_profit(p2, p1, mu)
+                regret1 = br1 - expected_profit(p1, p2, alpha=alpha, beta=beta)
+                regret2 = br2 - expected_profit(p2, p1, alpha=alpha, beta=beta)
 
                 agent1.update_fitness(p1, prof1)
                 agent2.update_fitness(p2, prof2)
@@ -145,6 +146,8 @@ def run_simulation():
             # Calculate metrics for this run
             avg_p = (np.median(prices1) + np.median(prices2)) / 2
             corr = np.corrcoef(prices1, prices2)[0, 1]
+            if np.isnan(corr):
+                corr = 0.0
             avg_regret = (np.mean(regrets1) + np.mean(regrets2)) / 2
 
             all_results.append({
