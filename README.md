@@ -11,7 +11,7 @@ An investigation into the evolutionary stability of pricing heuristics in duopol
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/your-username/ExpGA-duopoly.git](https://github.com/your-username/ExpGA-duopoly.git)
+   git clone https://github.com/pkrish012/ExpGA-duopoly.git
    cd ExpGA-duopoly
     ```
 
